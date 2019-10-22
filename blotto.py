@@ -20,27 +20,70 @@ def find_winner(moveOne, moveTwo):
     return playerOneScore, playerTwoScore
 
 
-def generate_moves(castles, soldiers):
-    if castles == 1:
-        return [[soldiers]]
+def factorial(x):
+
+    # base case
+    if x == 1:
+        f = 1
+
+    # for non-base cases, recursively calculate the factorial
     else:
-        possible_moves = []
-        possible_first_castle = [soldiers-i for i in range(soldiers+1)]
-        for first_castle in possible_first_castle:
-            submoves = generate_moves(castles-1, soldiers-first_castle)
-            for submove in submoves:
-                submove_copy = submove.copy()
-                submove_copy.insert(0, first_castle)
-                possible_moves.append(submove_copy)
-        return possible_moves
+        f = x * factorial(x - 1)
+
+    return f
+
+
+def choose(n, m):
+
+    # for finding 'n choose m'
+    a = factorial(n)
+    b = factorial(m)
+    c = factorial(n - m)
+    d = b * c
+
+    return int(a / d)
+
+
+def generate_moves(S, N):
+    pureStrategies = []
+    i = 0
+    while i != choose(S + N - 1, N - 1):
+        if i == 0:
+            firstStrat = [0] * N
+            firstStrat[0] = S
+            pureStrategies.append(firstStrat)
+            i += 1
+        else:
+            strategy = []
+            for k in pureStrategies[i - 1]:
+                strategy.append(k)
+            if strategy[N - 2] != 0:
+                strategy[N - 2] += -1
+                strategy[N - 1] += 1
+            else:
+                j = 1
+                while strategy[N - 2 - j] == 0:
+                    j += 1
+                if N - 2 - j == 0:
+                    strategy[0] += -1
+                    strategy[1] = strategy[N - 1] + 1
+                    strategy[N - 1] = 0
+                else:
+                    strategy[N - 2 - j] += -1
+                    strategy[N - 2 - j + 1] += 1
+            pureStrategies.append(strategy)
+            i += 1
+    return pureStrategies
 
 
 def write_moves_to_file():
     castles = 10
     soldiers = 100
-    possible_moves = generate_moves(castles, soldiers)
+    possible_moves = generate_moves(soldiers, castles)
     with open("possible_moves.csv", 'w') as output:
         writer = csv.writer(output)
+        for possible_move in possible_moves:
+            writer.writerow(possible_move)
 
 
 def main():
