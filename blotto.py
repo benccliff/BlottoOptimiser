@@ -45,49 +45,42 @@ def choose(n, m):
 
 
 def generate_moves(S, N):
-    pureStrategies = []
-    i = 0
-    while i != choose(S + N - 1, N - 1):
-        if i == 0:
-            firstStrat = [0] * N
-            firstStrat[0] = S
-            pureStrategies.append(firstStrat)
-            i += 1
-        else:
-            strategy = []
-            for k in pureStrategies[i - 1]:
-                strategy.append(k)
-            if strategy[N - 2] != 0:
-                strategy[N - 2] += -1
-                strategy[N - 1] += 1
-            else:
-                j = 1
-                while strategy[N - 2 - j] == 0:
-                    j += 1
-                if N - 2 - j == 0:
-                    strategy[0] += -1
-                    strategy[1] = strategy[N - 1] + 1
-                    strategy[N - 1] = 0
-                else:
-                    strategy[N - 2 - j] += -1
-                    strategy[N - 2 - j + 1] += 1
-            pureStrategies.append(strategy)
-            i += 1
-    return pureStrategies
-
-
-def write_moves_to_file():
-    castles = 10
-    soldiers = 100
-    possible_moves = generate_moves(soldiers, castles)
     with open("possible_moves.csv", 'w') as output:
         writer = csv.writer(output)
-        for possible_move in possible_moves:
-            writer.writerow(possible_move)
+        last_strategy = []
+        i = 0
+        while i != choose(S + N - 1, N - 1):
+            if i == 0:
+                firstStrat = [0] * N
+                firstStrat[0] = S
+                last_strategy = firstStrat
+                writer.writerow(last_strategy)
+                i += 1
+            else:
+                strategy = []
+                for k in last_strategy:
+                    strategy.append(k)
+                if strategy[N - 2] != 0:
+                    strategy[N - 2] += -1
+                    strategy[N - 1] += 1
+                else:
+                    j = 1
+                    while strategy[N - 2 - j] == 0:
+                        j += 1
+                    if N - 2 - j == 0:
+                        strategy[0] += -1
+                        strategy[1] = strategy[N - 1] + 1
+                        strategy[N - 1] = 0
+                    else:
+                        strategy[N - 2 - j] += -1
+                        strategy[N - 2 - j + 1] += 1
+                last_strategy = strategy
+                writer.writerow(strategy)
+                i += 1
 
 
 def main():
-    write_moves_to_file()
+    generate_moves(100, 10)
 
 
 if __name__ == "__main__":
