@@ -1,7 +1,9 @@
-import csv
+import random
 
 
-def find_winner(moveOne, moveTwo):
+def find_winner(pairOne, pairTwo):
+    indexOne, moveOne = pairOne
+    indexTwo, moveTwo = pairTwo
     playerOneScore = 0
     playerTwoScore = 0
     castle = 0
@@ -12,75 +14,58 @@ def find_winner(moveOne, moveTwo):
             playerTwoScore += castle + 1
         castle += 1
     if playerOneScore > playerTwoScore:
-        print("Player one wins!")
+        return indexOne
     elif playerTwoScore > playerOneScore:
-        print("Player two wins!")
+        return indexTwo
     else:
-        print("It's a tie!")
-    return playerOneScore, playerTwoScore
+        return None
 
 
-def factorial(x):
-
-    # base case
-    if x == 1:
-        f = 1
-
-    # for non-base cases, recursively calculate the factorial
-    else:
-        f = x * factorial(x - 1)
-
-    return f
-
-
-def choose(n, m):
-
-    # for finding 'n choose m'
-    a = factorial(n)
-    b = factorial(m)
-    c = factorial(n - m)
-    d = b * c
-
-    return int(a / d)
+def play_tournament(strategies):
+    combinations = []
+    victories = [0 for i in range(10)]
+    n = len(strategies)
+    for i in range(n):
+        for j in range(i+1, n):
+            combinations.append([(i, strategies[i]), (j, strategies[j])])
+    for combo in combinations:
+        winner = find_winner(combo[0], combo[1])
+        if winner:
+            victories[winner] += 1
+    winners = [0, 1]
+    for i in range(2, 10):
+        if victories[i] > victories[winners[0]]:
+            winners.remove(winners[0])
+            winners.append(i)
+        elif victories[i] > victories[winners[1]]:
+            winners.remove(winners[1])
+            winners.append(i)
+    return [strategies[k] for k in winners]
 
 
-def generate_moves(S, N):
-    with open("possible_moves.csv", 'w') as output:
-        writer = csv.writer(output)
-        last_strategy = []
-        i = 0
-        while i != choose(S + N - 1, N - 1):
-            if i == 0:
-                firstStrat = [0] * N
-                firstStrat[0] = S
-                last_strategy = firstStrat
-                writer.writerow(last_strategy)
-                i += 1
+def generate_initial_strategies():
+    strategies = []
+    for i in range(10):
+        current_strategy = [0 for i in range(10)]
+        sum = 0
+        for j in range(10):
+            r = random.randint(0, 25)
+            sum += r
+            if sum <= 100:
+                current_strategy[j] = r
             else:
-                strategy = []
-                for k in last_strategy:
-                    strategy.append(k)
-                if strategy[N - 2] != 0:
-                    strategy[N - 2] += -1
-                    strategy[N - 1] += 1
-                else:
-                    j = 1
-                    while strategy[N - 2 - j] == 0:
-                        j += 1
-                    if N - 2 - j == 0:
-                        strategy[0] += -1
-                        strategy[1] = strategy[N - 1] + 1
-                        strategy[N - 1] = 0
-                    else:
-                        strategy[N - 2 - j] += -1
-                        strategy[N - 2 - j + 1] += 1
-                last_strategy = strategy
-                writer.writerow(strategy)
-                i += 1
+                break
+        if sum < 100:
+            current_strategy[0] += 100 - sum
+        random.shuffle(current_strategy)
+        strategies.append(current_strategy)
+    return strategies
 
 
 def main():
-    generate_moves(100, 10)
+    strategies = generate_initial_strategies()
+    winners = play_tournament(strategies)
+    print(winners)
 
 
 if __name__ == "__main__":
