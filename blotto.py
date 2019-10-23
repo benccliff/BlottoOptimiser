@@ -1,4 +1,5 @@
 import random
+from time import time
 
 
 def find_winner(pairOne, pairTwo):
@@ -43,9 +44,9 @@ def play_tournament(strategies):
     return [strategies[k] for k in winners]
 
 
-def generate_initial_strategies():
+def generate_initial_strategies(n):
     strategies = []
-    for i in range(10):
+    for i in range(n):
         current_strategy = [0 for i in range(10)]
         sum = 0
         for j in range(10):
@@ -62,10 +63,60 @@ def generate_initial_strategies():
     return strategies
 
 
+def slight_shuffle(strategy, number_of_shuffles):
+    i = 0
+    while i < number_of_shuffles:
+        r = random.randint(0, 9)
+        n = random.randint(0, 9)
+        if strategy[r] != 0:
+            strategy[r] -= 1
+            strategy[n] += 1
+            i += 1
+    return strategy
+
+
+def generate_child_strategies(winners):
+    children = []
+    for i in range(4):
+        new_strategy_one = slight_shuffle(winners[0], 10)
+        new_strategy_two = slight_shuffle(winners[1], 10)
+        children.extend([new_strategy_one, new_strategy_two])
+    children.extend(generate_initial_strategies(1))
+    k = random.randint(0, 1)
+    winners[k].reverse()
+    children.extend([winners[0]])
+    return children
+
+
+def genetic_algorithm(num_generations):
+    strategies = generate_initial_strategies(10)
+    winners = None
+    for t in range(num_generations):
+        winners = play_tournament(strategies)
+        strategies = generate_child_strategies(winners)
+    return winners
+
+
 def main():
-    strategies = generate_initial_strategies()
-    winners = play_tournament(strategies)
-    print(winners)
+    differences_from_avg = []
+    for i in range(1, 6):
+        all_plays = []
+        current_differences = 0
+        current_avg = [0 for i in range(10)]
+        for j in range(5):
+            winners = genetic_algorithm(10 ** i)
+            all_plays.extend(winners)
+        for j in range(10):
+            for k in range(10):
+                current_avg[j] += all_plays[k][j] / 10
+        for j in range(10):
+            for k in range(10):
+                current_differences += abs(all_plays[k][j] - current_avg[j])
+        differences_from_avg.append(current_differences)
+
+    for i in range(len(differences_from_avg)):
+        differences_from_avg[i] = round(differences_from_avg[i], 1)
+    print(differences_from_avg)
 
 
 if __name__ == "__main__":
