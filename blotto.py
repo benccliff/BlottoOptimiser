@@ -1,5 +1,4 @@
 import random
-from time import time
 
 
 def find_winner(pairOne, pairTwo):
@@ -78,8 +77,8 @@ def slight_shuffle(strategy, number_of_shuffles):
 def generate_child_strategies(winners):
     children = []
     for i in range(4):
-        new_strategy_one = slight_shuffle(winners[0], 10)
-        new_strategy_two = slight_shuffle(winners[1], 10)
+        new_strategy_one = slight_shuffle(winners[0], 20)
+        new_strategy_two = slight_shuffle(winners[1], 20)
         children.extend([new_strategy_one, new_strategy_two])
     children.extend(generate_initial_strategies(1))
     k = random.randint(0, 1)
@@ -98,25 +97,7 @@ def genetic_algorithm(num_generations):
 
 
 def main():
-    differences_from_avg = []
-    for i in range(1, 6):
-        all_plays = []
-        current_differences = 0
-        current_avg = [0 for i in range(10)]
-        for j in range(5):
-            winners = genetic_algorithm(10 ** i)
-            all_plays.extend(winners)
-        for j in range(10):
-            for k in range(10):
-                current_avg[j] += all_plays[k][j] / 10
-        for j in range(10):
-            for k in range(10):
-                current_differences += abs(all_plays[k][j] - current_avg[j])
-        differences_from_avg.append(current_differences)
-
-    for i in range(len(differences_from_avg)):
-        differences_from_avg[i] = round(differences_from_avg[i], 1)
-    print(differences_from_avg)
+    print(genetic_algorithm(1000))
 
 
 if __name__ == "__main__":
