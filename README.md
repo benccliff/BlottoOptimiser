@@ -1,4 +1,10 @@
 # BlottoOptimiser
-A Python programme using regret minimisation algorithms to find an optimal strategy for a variant of a Blotto game.
+A Python programme using a genetic algorithm to find an optimal strategy for a variant of a Blotto game.
 
-# THIS IS A WORK IN PROGRESS - I WILL WRITE A README WHEN I HAVE FINISHED WRITING THE PROGRAM
+To run the simulation for n iterations, use:
+
+<code>
+  genetic_algorithm(n)
+</code>
+
+This will return the two strategies which won the nth tournament of the algorithm.
