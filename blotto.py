@@ -97,7 +97,7 @@ def genetic_algorithm(num_generations):
 
 
 def main():
-    print(genetic_algorithm(1000))
+    print(genetic_algorithm(100000))
 
 
 if __name__ == "__main__":
